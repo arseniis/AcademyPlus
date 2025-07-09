@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AP TutorConnect - Sign Up</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+
+    .age-input.invalid {
+  border-color: #e74c3c;
+  animation: shake 0.5s;
+}
+
+    :root {
+      --primary-blue: #4a85e8;
+      --accent-orange: #ff9900;
+      --bg-light: #f5f7fa;
+      --text-dark: #2e2e2e;
+      --border-radius: 12px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-light);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 520px;
+      animation: fadeIn 0.6s ease;
+    }
+
+    h2 {
+      color: var(--primary-blue);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary-blue);
+      outline: none;
+    }
+
+    select {
+      appearance: none;
+      background-color: white;
+      background-image: url("data:image/svg+xml;utf8,<svg fill='none' stroke='%234a85e8' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M19 9l-7 7-7-7'/></svg>");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1rem;
+      padding-right: 2.5rem;
+    }
+
+    .invalid {
+      border-color: #e74c3c !important;
+      animation: shake 0.5s;
+    }
+
+    .validation-message {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #e74c3c;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      height: 16px;
+    }
+
+    .validation-message.show {
+      opacity: 1;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary-blue);
+      color: white;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #3a6ecc;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #ddd;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary-blue), var(--accent-orange));
+      transition: width 0.3s ease;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .continue-button {
+      width: 105%;
+    }
+
+    
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <div class="first-page" id="step1">
+      <h2>Sign In / Sign Up</h2>
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="example@domain.com" />
+        <div class="validation-message" id="emailError"></div>
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" />
+        <div class="validation-message" id="passwordError"></div>
+      </div>
+      <button class="continue-button" onclick="nextStep(2)">Continue</button>
+    </div>
+
+    <div id="step2" class="hidden">
+      <h2>Tell Us About You</h2>
+      <div class="input-group">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" placeholder="John" />
+        <div class="validation-message" id="firstNameError"></div>
+      </div>
+      <div class="input-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" placeholder="Doe" />
+        <div class="validation-message" id="lastNameError"></div>
+      </div>
+      <div class="input-group">
+        <label for="ageInput" class="age-input-label">Your Age</label>
+        <input 
+            type="number" 
+            id="ageInput" 
+            class="age-input" 
+            placeholder="Enter your age (numbers only)"
+            min="1"
+            max="120"
+            step="1"
+            inputmode="numeric"
+            pattern="\d*"
+        />
+        <div class="validation-message" id="validationMessage"></div>
+        </div>
+      <div class="input-group">
+        <label for="school">School</label>
+        <input type="text" id="school" placeholder="Start typing your school name..." />
+        <div class="validation-message" id="schoolError"></div>
+      </div>
+      <div class="input-group">
+        <label for="grade">Grade</label>
+        <select id="grade">
+          <option value="">Select your grade</option>
+          <option value="M3">M3</option>
+          <option value="H1">H1</option>
+          <option value="H2">H2</option>
+          <option value="H3">H3</option>
+          <option value="Other">Other</option>
+        </select>
+        <div class="validation-message" id="gradeError"></div>
+      </div>
+      <button onclick="submitDetails()">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const schoolList = ["Hiroo Gakuen", "ASIJ", "YIS", "St. Mary's", "UWC ISAK", "Nishimachi", "Keio", "Waseda", "Columbia International"];
+    const schoolInput = document.getElementById('school');
+
+    schoolInput.addEventListener('input', function () {
+      const val = this.value;
+      closeAllLists();
+      if (!val) return false;
+      const list = document.createElement("div");
+      list.setAttribute("id", this.id + "-autocomplete-list");
+      list.setAttribute("class", "autocomplete-items");
+      this.parentNode.appendChild(list);
+
+      schoolList.forEach(school => {
+        if (school.toLowerCase().includes(val.toLowerCase())) {
+          const item = document.createElement("div");
+          item.innerHTML = "<strong>" + school.substr(0, val.length) + "</strong>" + school.substr(val.length);
+          item.addEventListener("click", function () {
+            schoolInput.value = school;
+            closeAllLists();
+          });
+          list.appendChild(item);
+        }
+      });
+    });
+
+    function closeAllLists() {
+      const items = document.getElementsByClassName("autocomplete-items");
+      for (let i = 0; i < items.length; i++) {
+        items[i].parentNode.removeChild(items[i]);
+      }
+    }
+
+    function nextStep(step) {
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const emailError = document.getElementById('emailError');
+      const passwordError = document.getElementById('passwordError');
+
+      let valid = true;
+
+      if (!email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        email.classList.add('invalid');
+        emailError.textContent = 'Invalid email format';
+        emailError.classList.add('show');
+        valid = false;
+      } else {
+        email.classList.remove('invalid');
+        emailError.classList.remove('show');
+      }
+
+      if (!password.value) {
+        password.classList.add('invalid');
+        passwordError.textContent = 'Password is required';
+        passwordError.classList.add('show');
+        valid = false;
+      } else {
+        password.classList.remove('invalid');
+        passwordError.classList.remove('show');
+      }
+
+      if (!valid) return;
+
+      localStorage.setItem('userEmail', email.value);
+      localStorage.setItem('userPass', password.value);
+
+      document.getElementById('step1').classList.add('hidden');
+      document.getElementById('step2').classList.remove('hidden');
+      document.getElementById('progress').style.width = '50%';
+    }
+
+    function submitDetails() {
+      const fields = ['firstName', 'lastName', 'ageInput', 'school', 'grade'];
+      let valid = true;
+
+      fields.forEach(id => {
+        const input = document.getElementById(id);
+        const error = document.getElementById(id + 'Error');
+      if (!input.value && id !== 'ageInput') {
+          input.classList.add('invalid');
+          error.textContent = id === 'ageInput' ? 'Enter a valid age (1-120)' : 'This field is required';
+          error.classList.add('show');
+          valid = false;
+        } else {
+          input.classList.remove('invalid');
+          error.classList.remove('show');
+        }
+      });
+
+      if (!valid) return;
+
+      localStorage.setItem('firstName', document.getElementById('firstName').value);
+      localStorage.setItem('lastName', document.getElementById('lastName').value);
+      localStorage.setItem('age', document.getElementById('ageInput').value);
+      localStorage.setItem('school', document.getElementById('school').value);
+      localStorage.setItem('grade', document.getElementById('grade').value);
+
+      alert("Step 2 complete! Ready to move on.");
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+  const ageInput = document.getElementById('ageInput');
+  const validationMessage = document.getElementById('validationMessage');
+
+  // Real-time filtering and validation
+  ageInput.addEventListener('input', function () {
+    this.value = this.value.replace(/[^0-9]/g, ''); // remove non-digits
+    validateInput();
+  });
+
+  ageInput.addEventListener('blur', validateInput);
+
+  function validateInput() {
+    const value = ageInput.value;
+
+    if (value.length === 0) {
+      ageInput.classList.remove('invalid');
+      validationMessage.textContent = '';
+      validationMessage.classList.remove('show');
+    } else if (!/^\d+$/.test(value)) {
+      ageInput.classList.add('invalid');
+      validationMessage.textContent = 'Please enter numbers only (0-9)';
+      validationMessage.classList.add('show');
+    } else if (parseInt(value) < 1) {
+      ageInput.classList.add('invalid');
+      validationMessage.textContent = 'Age must be at least 1';
+      validationMessage.classList.add('show');
+    } else if (parseInt(value) > 120) {
+      ageInput.classList.add('invalid');
+      validationMessage.textContent = 'Please enter a realistic age (1–120)';
+      validationMessage.classList.add('show');
+    } else {
+      ageInput.classList.remove('invalid');
+      validationMessage.textContent = '';
+      validationMessage.classList.remove('show');
+    }
+  }
+    });
+  </script>
+</body>
+</html>
