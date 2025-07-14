@@ -157,7 +157,123 @@
       width: 105%;
     }
 
+    #modalOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 999;
+      display: none;
+    }
+
+    #selectedAps {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+      background: #f9f9f9;
+    }
+
+    #selectedAps.hidden {
+      display: none;
+    }
+
+    #apPlaceholder {
+      color: #999;
+      font-style: italic;
+      margin-top: 15px;
+    }
+
+    #apSelectorModal {
+      padding-bottom: 80px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 12px;
+      padding: 30px 30px 70px 30px;
+      width: 400px;
+      max-height: 60vh;
+      overflow-y: auto;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      display: none;
+    }
+
+    #confirmApBtn {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 30px;
+  width: calc(100% - 100px);
+  max-width: 360px;
+  background: var(--primary-blue);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 1001;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease;
+}
+
+#confirmApBtn:hover {
+  background: #3a6ecc;
+}
+
+    /* #apSelectorModal .confirm-btn {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 20px;
+      width: calc(100% - 100px);
+      max-width: 360px;
+      background: rgba(74, 133, 232, 0.9); /* glassy */
+      /* backdrop-filter: blur(12px);
+      border: none;
+      color: white;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 1001;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s ease;
+    } */
+
+    /* #apSelectorModal .confirm-btn:hover {
+      background: rgba(58, 110, 204, 0.95);
+    } */ 
+
+    /* #apSelectorModal::after {
+      content: '';
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      background: linear-gradient(to top, rgba(255, 255, 255, 0.8), transparent);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      pointer-events: none;
+    } */
     
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--primary-blue);
+      border-radius: 6px;
+      box-shadow: 0 0 1px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+
   </style>
 </head>
 <body>
@@ -226,6 +342,17 @@
         <div class="validation-message" id="gradeError"></div>
       </div>
       <button onclick="submitDetails()">Next</button>
+    </div>
+
+    <div id="step3" class="hidden">
+      <h2>Select Your APs</h2>
+      <div class="input-group" style="display: flex; gap: 10px;">
+       <button onclick="toggleApSelector()">Add APs</button>
+      </div>
+      <div id="selectedAps" class="hidden"></div>
+      <div id="apPlaceholder">No APs selected yet.</div>
+      <div style="margin-top: 20px;"></div>
+      <button onclick="submitAps()">Submit</button>
     </div>
   </div>
 
@@ -306,8 +433,14 @@
 
       fields.forEach(id => {
         const input = document.getElementById(id);
-        const error = document.getElementById(id + 'Error');
-      if (!input.value && id !== 'ageInput') {
+        let error;
+        if (id === 'ageInput') {
+          error = document.getElementById('validationMessage');
+        } else {
+          error = document.getElementById(id + 'Error');
+        }
+
+        if (!input.value) {
           input.classList.add('invalid');
           error.textContent = id === 'ageInput' ? 'Enter a valid age (1-120)' : 'This field is required';
           error.classList.add('show');
@@ -326,7 +459,9 @@
       localStorage.setItem('school', document.getElementById('school').value);
       localStorage.setItem('grade', document.getElementById('grade').value);
 
-      alert("Step 2 complete! Ready to move on.");
+      document.getElementById('step2').classList.add('hidden');
+      document.getElementById('step3').classList.remove('hidden');
+      document.getElementById('progress').style.width = '100%';
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -367,6 +502,128 @@
     }
   }
     });
+
+    const apSubjects = [
+    "AP Biology", "AP Calculus AB", "AP Calculus BC", "AP Chemistry", "AP Computer Science A",
+    "AP Computer Science Principles", "AP English Language", "AP English Literature",
+    "AP Environmental Science", "AP Human Geography", "AP Macroeconomics", "AP Microeconomics",
+    "AP Physics 1", "AP Physics 2", "AP Physics C: Mechanics", "AP Physics C: E&M",
+    "AP Psychology", "AP Statistics", "AP US Government", "AP US History", "AP World History"
+  ];
+
+  const selectedSubjects = new Set();
+
+  function toggleApSelector() {
+  const modal = document.getElementById('apSelectorModal');
+  const overlay = document.getElementById('modalOverlay');
+  const confirmBtn = document.getElementById('confirmApBtn');
+  const apListContainer = document.getElementById('apList');
+
+  const isOpen = modal.style.display === 'block';
+
+  if (isOpen) {
+    modal.style.display = 'none';
+    overlay.style.display = 'none';
+    confirmBtn.style.display = 'none';
+  } else {
+    modal.style.display = 'block';
+    overlay.style.display = 'block';
+    confirmBtn.style.display = 'block';
+
+    // Only fill once
+    if (apListContainer.children.length === 0) {
+      apSubjects.forEach(ap => {
+        const wrapper = document.createElement('div');
+        wrapper.style.display = 'flex';
+        wrapper.style.justifyContent = 'space-between';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.marginBottom = '12px';
+        wrapper.style.padding = '8px 0';
+        wrapper.style.borderBottom = '1px solid #eee';
+
+        const label = document.createElement('label');
+        label.textContent = ap;
+        label.style.flex = 'none';
+        label.style.marginRight = '20px';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = ap;
+
+        wrapper.appendChild(label);
+        wrapper.appendChild(checkbox);
+        apListContainer.appendChild(wrapper);
+      });
+    }
+  }
+}
+
+  function addSelectedAps() {
+  const apList = document.getElementById('apList').querySelectorAll('input[type="checkbox"]:checked');
+  let added = false;
+
+  apList.forEach(box => {
+    if (!selectedSubjects.has(box.value)) {
+      selectedSubjects.add(box.value);
+      renderApRow(box.value);
+      added = true;
+    }
+    box.checked = false;
+  });
+
+  if (added) {
+    document.getElementById('selectedAps').classList.remove('hidden');
+    document.getElementById('apPlaceholder').style.display = 'none';
+  }
+
+  document.getElementById('confirmApBtn').style.display = 'none';
+  toggleApSelector();
+}
+
+  function renderApRow(subject) {
+    document.getElementById('selectedAps').classList.remove('hidden');
+
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.alignItems = 'center';
+    row.style.marginBottom = '12px';
+    row.style.gap = '10px';
+
+    const label = document.createElement('div');
+    label.textContent = subject;
+    label.style.flex = '2';
+    label.style.fontWeight = '500';
+
+    const score = document.createElement('select');
+    score.innerHTML = '<option value="">Score</option>' +
+      [1, 2, 3, 4, 5].map(v => `<option value="${v}">${v}</option>`).join('');
+    score.style.flex = '1';
+
+    const year = document.createElement('input');
+    year.type = 'number';
+    year.placeholder = 'Year';
+    year.style.width = '70px';
+    year.style.flex = '0.7';
+
+    row.appendChild(label);
+    row.appendChild(score);
+    row.appendChild(year);
+
+    document.getElementById('selectedAps').appendChild(row);
+  }
+
+  function submitAps() {
+    // handle saving if needed
+    alert("APs submitted!");
+  }
   </script>
+
+  <div id="modalOverlay" onclick="toggleApSelector()"></div>
+  <div id="apSelectorModal">
+    <h3 style="margin-top: 0; text-align: center;">Select APs</h3>
+    <div id="apList" style="margin-bottom: 20px;"></div>
+  </div>
+  <button id="confirmApBtn" onclick="addSelectedAps()" style="display: none;">Confirm Selection</button>
+
 </body>
 </html>
