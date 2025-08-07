@@ -613,9 +613,41 @@
   }
 
   function submitAps() {
-    // handle saving if needed
-    alert("APs submitted!");
+    const selectedApsDiv = document.getElementById('selectedAps');
+    const rows = selectedApsDiv.children;
+    const aps = [];
+
+    for (let row of rows) {
+      const subject = row.children[0].textContent;
+      const score = row.children[1].value;
+      const year = row.children[2].value;
+
+      if (!score) {
+        alert(`Please enter a score for ${subject}`);
+        return; // stop submit if any selected AP is missing score
+      }
+
+      aps.push({ subject, score: parseInt(score), year: year || "" });
+    }
+
+    if (aps.length === 0) {
+      alert("Please select at least one AP and enter a score.");
+      return;
+    }
+
+    // Save all user info to localStorage
+    localStorage.setItem('firstName', document.getElementById('firstName').value);
+    localStorage.setItem('lastName', document.getElementById('lastName').value);
+    localStorage.setItem('age', document.getElementById('ageInput').value);
+    localStorage.setItem('school', document.getElementById('school').value);
+    localStorage.setItem('grade', document.getElementById('grade').value);
+    localStorage.setItem('userEmail', document.getElementById('email').value);
+    localStorage.setItem('userAPs', JSON.stringify(aps));
+
+    // Redirect to tutoring page
+    window.location.href = 'Tutoring.html'; // Change this if your tutoring page has a different filename
   }
+
   </script>
 
   <div id="modalOverlay" onclick="toggleApSelector()"></div>

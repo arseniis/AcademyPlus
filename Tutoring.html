@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AP TutorConnect - Tutors</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary-blue: #4a85e8;
+      --accent-orange: #ff9900;
+      --bg-light: #f5f7fa;
+      --text-dark: #2e2e2e;
+      --border-radius: 12px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-light);
+      margin: 0;
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: white;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      border-radius: var(--border-radius);
+    }
+
+    .profile {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .profile h2 {
+      color: var(--primary-blue);
+      margin: 0;
+    }
+
+    .nav-item {
+      margin: 15px 0;
+      font-weight: 600;
+      color: var(--text-dark);
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      color: var(--accent-orange);
+    }
+
+    .content {
+      flex: 1;
+      padding: 30px;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      border-radius: var(--border-radius);
+      margin-left: 20px;
+      overflow-y: auto;
+    }
+
+    h3 {
+      color: var(--primary-blue);
+      margin-bottom: 10px;
+    }
+
+    .button {
+      background-color: var(--primary-blue);
+      color: white;
+      padding: 12px 22px;
+      border: none;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .button:hover {
+      background-color: #3c6ed1;
+    }
+
+    .form-popup, .request-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 30px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      z-index: 1000;
+      width: 90%;
+      max-width: 420px;
+      box-sizing: border-box;
+    }
+
+    .form-popup form,
+    .request-popup {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-popup input,
+    .form-popup select,
+    .form-popup textarea,
+    .request-popup textarea {
+      width: 100%;
+      max-width: 360px;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: var(--border-radius);
+      border: 1px solid #ccc;
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
+    }
+
+    select {
+      appearance: none;
+      background: white url('data:image/svg+xml;utf8,<svg fill="%234a85e8" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
+      background-size: 16px;
+      padding-right: 40px;
+    }
+
+    .form-popup button,
+    .request-popup button {
+      background-color: var(--accent-orange);
+      color: white;
+      font-weight: 600;
+      padding: 12px;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 999;
+    }
+
+    .card {
+      background: #f9f9f9;
+      padding: 18px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
+      position: relative;
+    }
+
+    .badge {
+      background-color: var(--accent-orange);
+      color: white;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 8px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    .gig-actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+
+    .gig-actions button {
+      background-color: var(--primary-blue);
+      color: white;
+      padding: 6px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+    }
+
+    .search-bar {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .search-bar input {
+      width: 100%;
+      max-width: 300px;
+      padding: 10px;
+      border-radius: var(--border-radius);
+      border: 1px solid #ccc;
+    }
+
+    .section {
+      margin-bottom: 50px;
+    }
+
+    .section-title {
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .center-buttons {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      gap: 10px;
+    }
+
+    .score-display {
+      background: #e8f4f8;
+      border: 1px solid #4a85e8;
+      padding: 12px;
+      border-radius: var(--border-radius);
+      text-align: center;
+      font-weight: 600;
+      color: var(--primary-blue);
+      margin: 10px 0;
+      max-width: 360px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="profile">
+        <h2 id="userName">Welcome!</h2>
+        <p id="userEmail">Your email:</p>
+    </div>
+    <div class="nav-item">Tutors</div>
+    <div class="nav-item">Rankings</div>
+    <div class="nav-item">Schedule</div>
+  </div>
+
+  <div class="content">
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 30px;">
+      <button class="button" id="startButton" onclick="openForm()">Start Tutoring</button>
+    </div>
+
+    <!-- Tutoring Form -->
+    <div class="form-popup" id="tutorForm">
+      <h3>Create a Tutoring Gig</h3>
+      <form id="gigForm">
+        <select id="subjectSelect" required>
+          <option value="" disabled selected>Select an AP Subject</option>
+        </select>
+        <div class="score-display" id="scoreDisplay" style="display: none;">
+          Your Score: <span id="selectedScore"></span>
+        </div>
+        <select required>
+          <option value="" disabled selected>Preferred Teaching Style</option>
+          <option value="1-on-1">1-on-1</option>
+          <option value="Group">Group</option>
+          <option value="Flexible">Flexible</option>
+        </select>
+        <textarea placeholder="Available Dates/Times" rows="3" required></textarea>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+
+    <!-- Request Form -->
+    <div class="request-popup" id="requestForm" style="display: none;">
+      <h3>Request Tutoring</h3>
+      <textarea rows="4" placeholder="Add a message or request specific dates..."></textarea>
+      <button onclick="submitRequest()">Send Request</button>
+    </div>
+
+    <div class="request-popup" id="viewRequestsPopup" style="display: none;">
+        <h3>Incoming Requests</h3>
+        <div id="requestsContainer"></div>
+        <button onclick="closeForm()" style="margin-top: 20px;">Close</button>
+    </div>
+
+    <div class="overlay" onclick="closeForm()"></div>
+
+    <!-- My Gigs Section -->
+    <div class="section">
+      <h3 class="section-title">My Tutoring Gigs</h3>
+      <div id="gigList"></div>
+    </div>
+
+    <!-- All Gigs Section -->
+    <div class="section">
+      <h3 class="section-title">All Active Gigs</h3>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search by subject...">
+      </div>
+      <div id="allGigsList"></div>
+      <div id="requestStatus" style="margin-top: 15px; color: green; font-weight: 600;"></div>
+    </div>
+  </div>
+
+  <script>
+    
+    // JS code updated to match user requirements
+    const formPopup = document.getElementById("tutorForm");
+    const requestPopup = document.getElementById("requestForm");
+    const overlay = document.querySelector(".overlay");
+    const gigForm = document.getElementById("gigForm");
+    const gigList = document.getElementById("gigList");
+    const allGigsList = document.getElementById("allGigsList");
+    const startButton = document.getElementById("startButton");
+    const searchInput = document.getElementById("searchInput");
+    const requestStatus = document.getElementById("requestStatus");
+    const gigRequests = new Map(); // Stores requests per gig ID
+    let gigIdCounter = 0;          // Auto-incrementing gig ID
+    let userAPs = [];              // User's AP subjects and scores
+    let currentUser = {};          // Current user data
+
+    // Load user data on page load
+    document.addEventListener("DOMContentLoaded", () => {
+        // Get user data from localStorage (from signup page)
+        const firstName = localStorage.getItem('firstName') || 'Guest';
+        const lastName = localStorage.getItem('lastName') || '';
+        const email = localStorage.getItem('userEmail') || 'No email provided';
+        const apsData = localStorage.getItem('userAPs');
+        
+        // Set current user object
+        currentUser = {
+            name: `${firstName} ${lastName}`.trim(),
+            email: email
+        };
+        
+        // Update UI with user info
+        document.getElementById("userName").textContent = `Welcome, ${currentUser.name}!`;
+        document.getElementById("userEmail").textContent = email;
+        
+        // Parse AP data and populate dropdown
+        if (apsData) {
+            try {
+                userAPs = JSON.parse(apsData);
+                populateSubjectDropdown();
+            } catch (e) {
+                console.error('Error parsing AP data:', e);
+            }
+        }
+    });
+
+    function populateSubjectDropdown() {
+        const subjectSelect = document.getElementById('subjectSelect');
+        
+        // Clear existing options (except the first one)
+        subjectSelect.innerHTML = '<option value="" disabled selected>Select an AP Subject</option>';
+        
+        // Add user's APs to dropdown (only if score is 3 or higher)
+        userAPs.forEach(ap => {
+            if (ap.score >= 3) {
+                const option = document.createElement('option');
+                option.value = ap.subject;
+                option.textContent = ap.subject;
+                option.dataset.score = ap.score;
+                subjectSelect.appendChild(option);
+            }
+        });
+
+        // Add event listener to show score when subject is selected
+        subjectSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const score = selectedOption.dataset.score;
+            
+            if (score) {
+                document.getElementById('scoreDisplay').style.display = 'block';
+                document.getElementById('selectedScore').textContent = score;
+            } else {
+                document.getElementById('scoreDisplay').style.display = 'none';
+            }
+        });
+    }
+
+    function openForm() {
+      formPopup.style.display = "block";
+      overlay.style.display = "block";
+    }
+
+    function closeForm() {
+        formPopup.style.display = "none";
+        requestPopup.style.display = "none";
+        document.getElementById("viewRequestsPopup").style.display = "none";
+        overlay.style.display = "none";
+        requestStatus.textContent = "";
+    }
+
+    let activeGigRequesting = null;
+
+    function openRequestForm(event, gigId) {
+        activeGigRequesting = gigId;
+        requestPopup.style.display = "block";
+        overlay.style.display = "block";
+        if (event) event.stopPropagation();
+    }
+
+    function submitRequest() {
+        const textarea = requestPopup.querySelector("textarea");
+        const message = textarea.value.trim();
+        if (!message) return;
+
+        const gigId = activeGigRequesting;
+        const requests = gigRequests.get(gigId);
+        if (requests) {
+            requests.push({ name: currentUser.name, message });
+        }
+
+        textarea.value = "";
+        requestStatus.textContent = "✔️ Request Sent!";
+        closeForm();
+    }
+
+    gigForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const [subjectSelect, , styleSelect, timeInput] = gigForm.elements;
+
+        const subject = subjectSelect.value;
+        const selectedOption = subjectSelect.options[subjectSelect.selectedIndex];
+        const score = parseInt(selectedOption.dataset.score);
+        const style = styleSelect.value;
+        const time = timeInput.value.trim();
+
+        if (!subject) {
+            alert("Please select an AP subject.");
+            return;
+        }
+
+        const gigId = `gig-${gigIdCounter++}`;
+        gigRequests.set(gigId, []);
+
+        // --- My Gigs Card ---
+        const card = document.createElement("div");
+        card.className = "card";
+        card.dataset.gigId = gigId;
+
+        const publicCard = document.createElement("div");
+        publicCard.className = "card";
+        publicCard.dataset.gigId = gigId;
+
+        const contentHTML = `
+        <strong>${subject} (Score: ${score})</strong><br/>
+        Style: ${style}<br/>
+        Availability: ${time}<br/>
+        Created by: <em>${currentUser.name}</em>
+        <div class="badge">🔥</div>
+        `;
+
+        card.innerHTML = contentHTML;
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.onclick = () => {
+            card.remove();
+            publicCard.remove();
+            gigRequests.delete(gigId);
+        };
+
+        const viewBtn = document.createElement("button");
+        viewBtn.textContent = "View Requests";
+        viewBtn.onclick = () => openRequestsPopup(gigId);
+
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "gig-actions";
+        actionsDiv.appendChild(deleteBtn);
+        actionsDiv.appendChild(viewBtn);
+        card.appendChild(actionsDiv);
+
+        // --- Public Card ---
+        publicCard.innerHTML = contentHTML;
+        const requestBtn = document.createElement("button");
+        requestBtn.textContent = "Request";
+        requestBtn.onclick = (event) => openRequestForm(event, gigId);
+
+        const publicActions = document.createElement("div");
+        publicActions.className = "gig-actions";
+        publicActions.appendChild(requestBtn);
+        publicCard.appendChild(publicActions);
+
+        gigList.appendChild(card);
+        allGigsList.appendChild(publicCard);
+
+        gigForm.reset();
+        document.getElementById('scoreDisplay').style.display = 'none';
+        closeForm();
+        startButton.textContent = "Create Another Gig";
+    });
+
+    searchInput.addEventListener("input", function () {
+      const term = searchInput.value.toLowerCase();
+      const gigs = allGigsList.querySelectorAll(".card");
+      gigs.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(term) ? "block" : "none";
+      });
+    });
+
+    function openRequestsPopup(gigId) {
+        const container = document.getElementById("requestsContainer");
+        container.innerHTML = "";
+
+        const requests = gigRequests.get(gigId);
+        if (!requests || requests.length === 0) {
+            container.innerHTML = "<p>No requests yet.</p>";
+        } else {
+            requests.forEach((req, i) => {
+            const div = document.createElement("div");
+            div.style.borderBottom = "1px solid #ccc";
+            div.style.marginBottom = "10px";
+            div.style.paddingBottom = "10px";
+
+            div.innerHTML = `
+                <strong>${req.name}</strong><br/>
+                <em>${req.message}</em><br/>
+            `;
+
+            const acceptBtn = document.createElement("button");
+            acceptBtn.textContent = "Accept";
+            acceptBtn.onclick = () => {
+                alert(`Accepted request from ${req.name}`);
+                requests.splice(i, 1);
+                openRequestsPopup(gigId); // Refresh
+            };
+
+            const declineBtn = document.createElement("button");
+            declineBtn.textContent = "Decline";
+            declineBtn.onclick = () => {
+                alert(`Declined request from ${req.name}`);
+                requests.splice(i, 1);
+                openRequestsPopup(gigId); // Refresh
+            };
+
+            acceptBtn.style.marginRight = "8px";
+            div.appendChild(acceptBtn);
+            div.appendChild(declineBtn);
+            container.appendChild(div);
+            });
+        }
+
+        document.getElementById("viewRequestsPopup").style.display = "block";
+        overlay.style.display = "block";
+    }
+
+  </script>
+</body>
+</html>
